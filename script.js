@@ -1,13 +1,14 @@
 (() => {
   // Config
   const segments = [
-    { label: '一等奖', color: '#ff6b6b', prizeKey: 'p1' },
-    { label: '二等奖', color: '#f7b500', prizeKey: 'p2' },
-    { label: '三等奖', color: '#4cd964', prizeKey: 'p3' },
     { label: '谢谢参与', color: '#5b8cff', prizeKey: null },
+    { label: '二等奖', color: '#f7b500', prizeKey: 'p2' },
     { label: '谢谢参与', color: '#9b59b6', prizeKey: null },
+    { label: '一等奖', color: '#ff6b6b', prizeKey: 'p1' },
     { label: '谢谢参与', color: '#2ecc71', prizeKey: null },
+    { label: '三等奖', color: '#4cd964', prizeKey: 'p3' },
     { label: '谢谢参与', color: '#e67e22', prizeKey: null },
+    { label: '谢谢参与', color: '#34495e', prizeKey: null },
   ];
 
   const prizeLimitsDefault = { p1: 1, p2: 1, p3: 1 };
