@@ -1,15 +1,31 @@
 (() => {
-  // Config
-  const segments = [
-    { label: '谢谢参与', color: '#5b8cff', prizeKey: null },
-    { label: '二等奖', color: '#f7b500', prizeKey: 'p2' },
-    { label: '谢谢参与', color: '#9b59b6', prizeKey: null },
-    { label: '一等奖', color: '#ff6b6b', prizeKey: 'p1' },
-    { label: '谢谢参与', color: '#2ecc71', prizeKey: null },
-    { label: '三等奖', color: '#4cd964', prizeKey: 'p3' },
-    { label: '谢谢参与', color: '#e67e22', prizeKey: null },
-    { label: '谢谢参与', color: '#34495e', prizeKey: null },
-  ];
+  // 等待 i18n 初始化
+  const initApp = () => {
+    if (!window.i18n) {
+      setTimeout(initApp, 50);
+      return;
+    }
+
+    // 初始化多语言
+    window.i18n.init();
+
+    // 获取当前语言的奖项配置
+    const getPrizeSegments = () => {
+      const lang = window.i18n.currentLang;
+      return [
+        { label: window.i18n.t('thankYou'), color: '#5b8cff', prizeKey: null },
+        { label: window.i18n.t('secondPrize'), color: '#f7b500', prizeKey: 'p2' },
+        { label: window.i18n.t('thankYou'), color: '#9b59b6', prizeKey: null },
+        { label: window.i18n.t('firstPrize'), color: '#ff6b6b', prizeKey: 'p1' },
+        { label: window.i18n.t('thankYou'), color: '#2ecc71', prizeKey: null },
+        { label: window.i18n.t('thirdPrize'), color: '#4cd964', prizeKey: 'p3' },
+        { label: window.i18n.t('thankYou'), color: '#e67e22', prizeKey: null },
+        { label: window.i18n.t('thankYou'), color: '#34495e', prizeKey: null },
+      ];
+    };
+
+    // Config
+    let segments = getPrizeSegments();
 
   const prizeLimitsDefault = { p1: 1, p2: 1, p3: 1 };
   const storageKey = 'wheel-prize-limits-v1';
@@ -148,7 +164,7 @@
     if (spinning) return;
     spinning = true;
     spinBtn.disabled = true;
-    resultEl.textContent = '正在抽取…';
+    resultEl.textContent = window.i18n.t('spinning');
 
     const slice = (Math.PI * 2) / segments.length;
     const { idx, angle: target } = pickTargetAngle();
@@ -171,12 +187,12 @@
     limits = { ...prizeLimitsDefault };
     saveLimits();
     renderStatus();
-    resultEl.textContent = '名额已重置。';
+    resultEl.textContent = window.i18n.t('quotaReset');
   }
 
   function handlePrize(seg) {
     if (!seg.prizeKey) {
-      resultEl.textContent = '谢谢参与，下次好运！';
+      resultEl.textContent = window.i18n.t('thanksForParticipation');
       return;
     }
 
@@ -184,29 +200,41 @@
       limits[seg.prizeKey] -= 1;
       saveLimits();
       renderStatus();
-      resultEl.textContent = `恭喜获得：${seg.label}！`;
+      resultEl.textContent = window.i18n.t('congratulations', { prize: seg.label });
     } else {
-      resultEl.textContent = `${seg.label} 名额已抽完，本次视为未中奖。`;
+      resultEl.textContent = window.i18n.t('prizeExhausted', { prize: seg.label });
     }
   }
 
   function renderStatus() {
     const items = [
-      { title: '一等奖', key: 'p1' },
-      { title: '二等奖', key: 'p2' },
-      { title: '三等奖', key: 'p3' },
+      { title: window.i18n.t('firstPrize'), key: 'p1' },
+      { title: window.i18n.t('secondPrize'), key: 'p2' },
+      { title: window.i18n.t('thirdPrize'), key: 'p3' },
     ];
     statusCards.innerHTML = items.map(({ title, key }) => {
       const left = limits[key];
-      const badge = left > 0 ? `<span class="badge ok">剩余 ${left}</span>` : `<span class="badge out">已抽完</span>`;
+      const badge = left > 0 
+        ? `<span class="badge ok">${window.i18n.t('remaining', { count: left })}</span>` 
+        : `<span class="badge out">${window.i18n.t('exhausted')}</span>`;
       return `
         <div class="card">
           <h3>${title} ${badge}</h3>
-          <div class="meta">总名额：1 · 本地保存</div>
+          <div class="meta">${window.i18n.t('totalQuota')}</div>
         </div>
       `;
     }).join('');
   }
+
+  // 监听语言变化
+  const originalSetLanguage = window.i18n.setLanguage.bind(window.i18n);
+  window.i18n.setLanguage = function(lang) {
+    originalSetLanguage(lang);
+    // 更新转盘文本
+    segments = getPrizeSegments();
+    renderWheel(angle);
+    renderStatus();
+  };
 
   // Helpers
   function normalizeAngle(a) {
@@ -238,4 +266,9 @@
     }
     requestAnimationFrame(step);
   }
+
+  }; // 结束 initApp 函数
+
+  // 启动应用
+  initApp();
 })();

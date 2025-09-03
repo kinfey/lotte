@@ -9,8 +9,17 @@
   <body>
     <main class="app">
       <header class="header">
-        <h1>转盘抽奖</h1>
-        <p class="subtitle">7格 · 7种颜色 · 一等奖1名 · 二等奖1名 · 三等奖1名</p>
+        <div class="header-top">
+          <h1 data-i18n="title">转盘抽奖</h1>
+          <div class="language-selector">
+            <select id="languageSelect" aria-label="选择语言">
+              <option value="zh-CN">简体中文</option>
+              <option value="zh-TW">繁體中文</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+        <p class="subtitle" data-i18n="subtitle">7格 · 7种颜色 · 一等奖1名 · 二等奖1名 · 三等奖1名</p>
       </header>
 
       <section class="wheel-wrap">
@@ -19,10 +28,10 @@
           <div class="pointer" aria-hidden="true">▼</div>
         </div>
         <div class="controls">
-          <button id="spinBtn" class="primary">开始抽奖</button>
-          <button id="resetBtn" class="ghost" title="恢复一等奖/二等奖/三等奖名额">重置名额</button>
+          <button id="spinBtn" class="primary" data-i18n="startSpin">开始抽奖</button>
+          <button id="resetBtn" class="ghost" data-i18n="resetQuota" data-i18n-title="resetQuotaTitle">重置名额</button>
         </div>
-        <p class="note">说明：每个大奖仅1名。抽到已抽完的大奖视为未中奖。</p>
+        <p class="note" data-i18n="note">说明：每个大奖仅1名。抽到已抽完的大奖视为未中奖。</p>
       </section>
 
       <section class="status">
@@ -31,10 +40,11 @@
       </section>
 
       <footer class="footer">
-        <small>纯前端示例，名额状态保存在本地浏览器（localStorage）。</small>
+        <small data-i18n="footer">纯前端示例，名额状态保存在本地浏览器（localStorage）。</small>
       </footer>
     </main>
 
+    <script src="./i18n.js"></script>
     <script src="./script.js"></script>
   </body>
-  </html>
+</html>
