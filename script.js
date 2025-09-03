@@ -21,12 +21,28 @@
   const resultEl = document.getElementById('result');
   const statusCards = document.getElementById('statusCards');
 
-  const W = canvas.width;
-  const H = canvas.height;
-  const cx = W / 2;
-  const cy = H / 2;
-  const radius = Math.min(W, H) / 2 - 10;
-  const textRadius = radius * 0.72;
+  // Canvas sizing
+  function updateCanvasSize() {
+    const container = canvas.parentElement;
+    const containerSize = Math.min(container.clientWidth, container.clientHeight, 520);
+    canvas.width = containerSize;
+    canvas.height = containerSize;
+    canvas.style.width = containerSize + 'px';
+    canvas.style.height = containerSize + 'px';
+  }
+
+  // Update canvas size on load and resize
+  updateCanvasSize();
+  window.addEventListener('resize', () => {
+    updateCanvasSize();
+    renderWheel(angle);
+  });
+
+  const getCanvasSize = () => canvas.width;
+  const getCenterX = () => getCanvasSize() / 2;
+  const getCenterY = () => getCanvasSize() / 2;
+  const getRadius = () => Math.min(getCanvasSize(), getCanvasSize()) / 2 - 10;
+  const getTextRadius = () => getRadius() * 0.72;
 
   // State
   let limits = loadLimits();
@@ -57,6 +73,13 @@
   }
 
   function renderWheel(startAngle) {
+    const W = getCanvasSize();
+    const H = getCanvasSize();
+    const cx = getCenterX();
+    const cy = getCenterY();
+    const radius = getRadius();
+    const textRadius = getTextRadius();
+    
     ctx.clearRect(0, 0, W, H);
     const slice = (Math.PI * 2) / segments.length;
 
@@ -90,16 +113,19 @@
       ctx.translate(tx, ty);
       ctx.rotate(mid + Math.PI / 2);
       ctx.fillStyle = '#101325';
-      ctx.font = 'bold 20px ui-sans-serif, system-ui, -apple-system';
+      // Responsive font size
+      const fontSize = Math.max(12, Math.min(20, radius * 0.08));
+      ctx.font = `bold ${fontSize}px ui-sans-serif, system-ui, -apple-system`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(seg.label, 0, 0);
       ctx.restore();
     });
 
-    // Center circle
+    // Center circle - responsive size
+    const centerRadius = Math.max(12, Math.min(18, radius * 0.035));
     ctx.beginPath();
-    ctx.arc(0, 0, 18, 0, Math.PI * 2);
+    ctx.arc(0, 0, centerRadius, 0, Math.PI * 2);
     ctx.fillStyle = '#ffffff';
     ctx.fill();
 
