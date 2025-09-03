@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>转盘抽奖 - 7格</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>转盘抽奖</h1>
+        <p class="subtitle">7格 · 7种颜色 · 一等奖1名 · 二等奖1名 · 三等奖1名</p>
+      </header>
+
+      <section class="wheel-wrap">
+        <div class="canvas-wrap">
+          <canvas id="wheel" width="520" height="520" aria-label="抽奖转盘" role="img"></canvas>
+          <div class="pointer" aria-hidden="true">▼</div>
+        </div>
+        <div class="controls">
+          <button id="spinBtn" class="primary">开始抽奖</button>
+          <button id="resetBtn" class="ghost" title="恢复一等奖/二等奖/三等奖名额">重置名额</button>
+        </div>
+        <p class="note">说明：每个大奖仅1名。抽到已抽完的大奖视为未中奖。</p>
+      </section>
+
+      <section class="status">
+        <div class="cards" id="statusCards"></div>
+        <div class="result" id="result" aria-live="polite"></div>
+      </section>
+
+      <footer class="footer">
+        <small>纯前端示例，名额状态保存在本地浏览器（localStorage）。</small>
+      </footer>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+  </html>
