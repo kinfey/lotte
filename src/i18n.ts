@@ -1,5 +1,36 @@
+// Type definitions for internationalization
+interface I18nData {
+  [key: string]: {
+    title: string;
+    subtitle: string;
+    startSpin: string;
+    resetQuota: string;
+    resetQuotaTitle: string;
+    note: string;
+    footer: string;
+    firstPrize: string;
+    secondPrize: string;
+    thirdPrize: string;
+    thankYou: string;
+    spinning: string;
+    congratulations: string;
+    thanksForParticipation: string;
+    prizeExhausted: string;
+    quotaReset: string;
+    remaining: string;
+    exhausted: string;
+    totalQuota: string;
+  };
+}
+
+type SupportedLanguage = 'zh-CN' | 'zh-TW' | 'en';
+
+interface TranslationParams {
+  [key: string]: string | number;
+}
+
 // 多语言配置
-const i18nData = {
+const i18nData: I18nData = {
   'zh-CN': {
     title: '转盘抽奖',
     subtitle: '8格 · 8种颜色 · 一等奖1名 · 二等奖1名 · 三等奖1名',
@@ -67,13 +98,16 @@ const i18nData = {
 
 // 语言管理类
 class I18n {
+  public currentLang: SupportedLanguage;
+  private data: I18nData;
+
   constructor() {
     this.currentLang = this.getStoredLanguage() || this.detectLanguage();
     this.data = i18nData;
   }
 
-  detectLanguage() {
-    const browserLang = navigator.language || navigator.userLanguage;
+  private detectLanguage(): SupportedLanguage {
+    const browserLang = navigator.language || (navigator as any).userLanguage;
     if (browserLang.startsWith('zh-TW') || browserLang.startsWith('zh-HK')) {
       return 'zh-TW';
     } else if (browserLang.startsWith('zh')) {
@@ -82,43 +116,53 @@ class I18n {
     return 'en';
   }
 
-  getStoredLanguage() {
-    return localStorage.getItem('wheel-language');
+  private getStoredLanguage(): SupportedLanguage | null {
+    const stored = localStorage.getItem('wheel-language');
+    if (stored && ['zh-CN', 'zh-TW', 'en'].includes(stored)) {
+      return stored as SupportedLanguage;
+    }
+    return null;
   }
 
-  setLanguage(lang) {
+  public setLanguage(lang: SupportedLanguage): void {
     this.currentLang = lang;
     localStorage.setItem('wheel-language', lang);
     document.documentElement.lang = lang;
     this.updateUI();
   }
 
-  t(key, params = {}) {
-    let text = this.data[this.currentLang]?.[key] || this.data['zh-CN'][key] || key;
+  public t(key: string, params: TranslationParams = {}): string {
+    let text = this.data[this.currentLang]?.[key as keyof typeof this.data[SupportedLanguage]] || 
+               this.data['zh-CN'][key as keyof typeof this.data['zh-CN']] || 
+               key;
     
     // 替换参数
     Object.keys(params).forEach(param => {
-      text = text.replace(`{${param}}`, params[param]);
+      text = text.replace(`{${param}}`, String(params[param]));
     });
     
     return text;
   }
 
-  updateUI() {
+  private updateUI(): void {
     // 更新所有带有 data-i18n 属性的元素
     document.querySelectorAll('[data-i18n]').forEach(element => {
       const key = element.getAttribute('data-i18n');
-      element.textContent = this.t(key);
+      if (key) {
+        element.textContent = this.t(key);
+      }
     });
 
     // 更新带有 data-i18n-title 属性的元素的 title
     document.querySelectorAll('[data-i18n-title]').forEach(element => {
       const key = element.getAttribute('data-i18n-title');
-      element.title = this.t(key);
+      if (key) {
+        (element as HTMLElement).title = this.t(key);
+      }
     });
 
     // 更新语言选择器
-    const langSelect = document.getElementById('languageSelect');
+    const langSelect = document.getElementById('languageSelect') as HTMLSelectElement;
     if (langSelect) {
       langSelect.value = this.currentLang;
     }
@@ -127,18 +171,19 @@ class I18n {
     document.title = this.t('title');
   }
 
-  init() {
+  public init(): void {
     this.updateUI();
     
     // 绑定语言选择器事件
-    const langSelect = document.getElementById('languageSelect');
+    const langSelect = document.getElementById('languageSelect') as HTMLSelectElement;
     if (langSelect) {
       langSelect.addEventListener('change', (e) => {
-        this.setLanguage(e.target.value);
+        const target = e.target as HTMLSelectElement;
+        this.setLanguage(target.value as SupportedLanguage);
       });
     }
   }
 }
 
 // 创建全局 i18n 实例
-window.i18n = new I18n();
+(window as any).i18n = new I18n();
